@@ -39,7 +39,7 @@ DESTROY(dsa)
         DSA_free(dsa);
 
 DSA *
-generate_parameters(CLASS, bits, seed)
+generate_parameters(CLASS, bits, seed = "")
         char * CLASS
         int bits
         char *seed

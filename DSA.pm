@@ -7,7 +7,7 @@ require DynaLoader;
 
 use vars qw(@ISA $VERSION);
 @ISA = qw(DynaLoader);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 bootstrap Crypt::OpenSSL::DSA $VERSION;
 
@@ -21,6 +21,14 @@ Crypt::OpenSSL::DSA - Digital Signature Algorithm using OpenSSL
 =head1 SYNOPSIS
 
   use Crypt::OpenSSL::DSA;
+
+  # generate keys and write out to PEM files
+  my $dsa = Crypt::OpenSSL::DSA->generate_parameters( 512 );
+  $dsa->generate_key;
+  $dsa->write_pub_key( $filename );
+  $dsa->write_priv_key( $filename );
+
+  # using keys from PEM files
   my $dsa_priv = Crypt::OpenSSL::DSA->read_priv_key( $filename );
   my $sig = $dsa_priv->sign($message);
   my $dsa_pub = Crypt::OpenSSL::DSA->read_pub_key( $filename );
@@ -65,6 +73,11 @@ to sign messages.
 =head1 OBJECT METHODS
 
 =over 4
+
+=item $dsa->generate_key;
+
+Generates private and public keys, assuming that $dsa is the return
+value of generate_parameters.
 
 =item $sig = $dsa->sign( $message );
 
