@@ -1,0 +1,8 @@
+Changes
+DSA.pm
+DSA.xs
+Makefile.PL
+MANIFEST
+README
+t/sign.t
+typemap

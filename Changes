@@ -1,0 +1,4 @@
+Revision history for Perl extension Crypt::OpenSSL::DSA.
+
+0.01  Sep 18th, 2001
+	- original version; created by h2xs
