@@ -1,5 +1,6 @@
 Changes
 lib/Crypt/OpenSSL/DSA.pm
+lib/Crypt/OpenSSL/DSA/Signature.pod
 DSA.xs
 Makefile.PL
 MANIFEST

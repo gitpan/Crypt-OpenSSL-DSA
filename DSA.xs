@@ -285,10 +285,82 @@ get_pub_key(dsa)
     OUTPUT:
         RETVAL
 
-MODULE = Crypt::OpenSSL::DSA    PACKAGE = Crypt::OpenSSL::DSA::Signature
+SV *
+get_priv_key(dsa)
+        DSA *dsa
+    PREINIT:
+        char *to;
+        int len;
+    CODE:
+        to = malloc(sizeof(char) * 128);
+        len = BN_bn2bin(dsa->priv_key, to);
+        RETVAL = newSVpvn(to, len);
+        free(to);
+    OUTPUT:
+        RETVAL
 
 void
-DESTORY(dsa_sig)
+set_p(dsa, p_SV)
+        DSA *dsa
+        SV * p_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(p_SV);
+        dsa->p = BN_bin2bn(SvPV(p_SV, len), len, NULL);
+
+void
+set_q(dsa, q_SV)
+        DSA *dsa
+        SV * q_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(q_SV);
+        dsa->q = BN_bin2bn(SvPV(q_SV, len), len, NULL);
+
+void
+set_g(dsa, g_SV)
+        DSA *dsa
+        SV * g_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(g_SV);
+        dsa->g = BN_bin2bn(SvPV(g_SV, len), len, NULL);
+
+void
+set_pub_key(dsa, pub_key_SV)
+        DSA *dsa
+        SV * pub_key_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(pub_key_SV);
+        dsa->pub_key = BN_bin2bn(SvPV(pub_key_SV, len), len, NULL);
+
+void
+set_priv_key(dsa, priv_key_SV)
+        DSA *dsa
+        SV * priv_key_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(priv_key_SV);
+        dsa->priv_key = BN_bin2bn(SvPV(priv_key_SV, len), len, NULL);
+
+MODULE = Crypt::OpenSSL::DSA    PACKAGE = Crypt::OpenSSL::DSA::Signature
+
+DSA_SIG *
+new(CLASS)
+        char * CLASS
+    CODE:
+        RETVAL = DSA_SIG_new();
+    OUTPUT:
+        RETVAL
+
+void
+DESTROY(dsa_sig)
         DSA_SIG *dsa_sig
     CODE:
         DSA_SIG_free(dsa_sig);
@@ -320,3 +392,23 @@ get_s(dsa_sig)
         free(to);
     OUTPUT:
         RETVAL
+
+void
+set_r(dsa_sig, r_SV)
+        DSA_SIG *dsa_sig
+        SV * r_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(r_SV);
+        dsa_sig->r = BN_bin2bn(SvPV(r_SV, len), len, NULL);
+
+void
+set_s(dsa_sig, s_SV)
+        DSA_SIG *dsa_sig
+        SV * s_SV
+    PREINIT:
+        int len;
+    CODE:
+        len = SvCUR(s_SV);
+        dsa_sig->s = BN_bin2bn(SvPV(s_SV, len), len, NULL);

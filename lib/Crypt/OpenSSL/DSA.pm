@@ -7,7 +7,7 @@ require DynaLoader;
 
 use vars qw(@ISA $VERSION);
 @ISA = qw(DynaLoader);
-$VERSION = '0.04';
+$VERSION = '0.10';
 
 bootstrap Crypt::OpenSSL::DSA $VERSION;
 
@@ -140,29 +140,29 @@ Writes the public key into a PEM file.
 
 Writes the private key into a PEM file.
 
-=item $p = $dsa->get_p
+=item $p = $dsa->get_p, $dsa->set_p($p)
 
-Returns the prime number in binary format.
+Gets/sets the prime number in binary format.
 
-=item $q = $dsa->get_q
+=item $q = $dsa->get_q, $dsa->set_q($q)
 
-Returns the subprime number (q | p-1) in binary format.
+Gets/sets the subprime number (q | p-1) in binary format.
 
-=item $g = $dsa->get_g
+=item $g = $dsa->get_g, $dsa->set_g($g)
 
-Returns the generator of subgroup in binary format.
+Gets/sets the generator of subgroup in binary format.
 
-=item $pub_key = $dsa->get_pub_key
+=item $pub_key = $dsa->get_pub_key, $dsa->set_pub_key($pub_key)
 
-Returns the public key (y = g^x) in binary format.
+Gets/sets the public key (y = g^x) in binary format.
+
+=item $priv_key = $dsa->get_priv_key, $dsa->set_priv_key($priv_key)
+
+Gets/sets the private key in binary format.
 
 =back
 
 =head1 NOTES
-
-This module is in early alpha stage.  It is suggested that you look over
-the source code and test cases before using the module.  In addition,
-the API is subject to change.
 
 L<Crpyt::DSA> is a more mature Perl DSA module, but can be difficult to
 install, because of the L<Math::Pari> requirement.
@@ -171,7 +171,7 @@ Comments, suggestions, and patches welcome.
 
 =head1 AUTHOR
 
-T.J. Mather, E<lt>tjmather@tjmather.comE<gt>
+T.J. Mather, E<lt>tjmather@maxmind.comE<gt>
 
 =head1 COPYRIGHT
 
@@ -183,5 +183,7 @@ you may redistribute it and/or modify it under the same terms as Perl itself.
 L<Crypt::OpenSSL::DSA::Signature>
 
 L<Crypt::DSA>, L<Crypt::OpenSSL::RSA>
+
+L<Net::DNS::SEC>
 
 =cut

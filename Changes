@@ -1,5 +1,11 @@
 Revision history for Perl extension Crypt::OpenSSL::DSA.
 
+0.10  Sep 25th, 2002
+        - Fixed Memory leak with signature object.
+	- Added set_p, set_q, set_g, set_pub_key, set_priv_key (Olaf Kolkman)
+        - Added set_r and set_s methods to Crypt::OpenSSL::DSA::Signature
+	- Renamed Signature.pm to Signature.pod
+
 0.04  Sep 24th, 2002
 	- Fixed bug in verify method
         - Added read_priv_key_str and read_pub_key_str
