@@ -7,9 +7,19 @@ require DynaLoader;
 
 use vars qw(@ISA $VERSION);
 @ISA = qw(DynaLoader);
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 bootstrap Crypt::OpenSSL::DSA $VERSION;
+
+sub read_pub_key_str {
+  my ($class, $key_str) = @_;
+  $class->_load_key(0, $key_str);
+}
+
+sub read_priv_key_str {
+  my ($class, $key_str) = @_;
+  $class->_load_key(1, $key_str);
+}
 
 1;
 __END__
@@ -30,9 +40,15 @@ Crypt::OpenSSL::DSA - Digital Signature Algorithm using OpenSSL
 
   # using keys from PEM files
   my $dsa_priv = Crypt::OpenSSL::DSA->read_priv_key( $filename );
-  my $sig = $dsa_priv->sign($message);
-  my $dsa_pub = Crypt::OpenSSL::DSA->read_pub_key( $filename );
-  my $valid = $dsa_pub->verify($message, $sig);
+  my $sig      = $dsa_priv->sign($message);
+  my $dsa_pub  = Crypt::OpenSSL::DSA->read_pub_key( $filename );
+  my $valid    = $dsa_pub->verify($message, $sig);
+
+  # using keys from PEM strings
+  my $dsa_priv = Crypt::OpenSSL::DSA->read_priv_key_str( $key_string );
+  my $sig      = $dsa_priv->sign($message);
+  my $dsa_pub  = Crypt::OpenSSL::DSA->read_pub_key_str( $key_string );
+  my $valid    = $dsa_pub->verify($message, $sig);
 
 =head1 DESCRIPTION
 
@@ -67,6 +83,18 @@ to verify DSA signatures.
 
 Reads in a private key PEM file and returns a new DSA object that can be used
 to sign messages.
+
+=item $dsa = Crypt::OpenSSL::DSA->read_pub_key_str( $key_string );
+
+Reads in a public key PEM string and returns a new DSA object that can be used
+to verify DSA signatures.
+The string should include the -----BEGIN...----- and -----END...----- lines.
+
+=item $dsa = Crypt::OpenSSL::DSA->read_priv_key_str( $key_string );
+
+Reads in a private key PEM string and returns a new DSA object that can be used
+to sign messages.
+The string should include the -----BEGIN...----- and -----END...----- lines.
 
 =back
 
@@ -137,7 +165,7 @@ the source code and test cases before using the module.  In addition,
 the API is subject to change.
 
 L<Crpyt::DSA> is a more mature Perl DSA module, but can be difficult to
-install.
+install, because of the L<Math::Pari> requirement.
 
 Comments, suggestions, and patches welcome.
 
@@ -147,7 +175,7 @@ T.J. Mather, E<lt>tjmather@tjmather.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001, 2002 T.J. Mather.  Crypt::OpenSSL::DSA is free software;
+Copyright (c) 2002 T.J. Mather.  Crypt::OpenSSL::DSA is free software;
 you may redistribute it and/or modify it under the same terms as Perl itself. 
 
 =head1 SEE ALSO

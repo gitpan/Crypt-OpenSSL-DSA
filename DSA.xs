@@ -12,6 +12,7 @@ extern "C" {
 #include <openssl/err.h>
 #include <openssl/pem.h>
 #include <openssl/dsa.h>
+#include <openssl/ssl.h>
 
 #ifdef __cplusplus
 }
@@ -90,7 +91,7 @@ sign(dsa, dgst)
         siglen = DSA_size(dsa);
         sigret = malloc(siglen);
         if (!(DSA_sign(0, (const unsigned char *)dgst, strlen(dgst), sigret, &siglen, dsa))) {
-          croak("Error in dsa_sign: %s",ERR_error_string(ERR_get_error(), NULL));
+          croak("Error in DSA_sign: %s",ERR_error_string(ERR_get_error(), NULL));
         }
         RETVAL = newSVpvn(sigret, siglen);
         free(sigret);
@@ -101,9 +102,11 @@ int
 verify(dsa, dgst, sigbuf)
         DSA * dsa
         char *dgst
-        char *sigbuf
+        SV *sigbuf
     CODE:
-        RETVAL = DSA_verify(0, dgst, strlen(dgst), sigbuf, strlen(sigbuf), dsa);
+        RETVAL = DSA_verify(0, dgst, strlen(dgst), SvPV(sigbuf, SvLEN(sigbuf)), SvLEN(sigbuf), dsa);
+        if (RETVAL == -1)
+          croak("Error in DSA_verify: %s",ERR_error_string(ERR_get_error(), NULL));        
     OUTPUT:
         RETVAL
 
@@ -142,6 +145,31 @@ write_params(dsa, filename)
           croak("Can't open file %s", filename);
         RETVAL = PEM_write_DSAparams(f, dsa);
         fclose(f);
+    OUTPUT:
+        RETVAL
+
+DSA *
+_load_key(CLASS, private_flag_SV, key_string_SV)
+        char *CLASS;
+        SV * private_flag_SV;
+        SV * key_string_SV;
+    PREINIT:
+        int key_string_length;  /* Needed to pass to SvPV */
+        char *key_string;
+        char private_flag;
+        BIO *stringBIO;
+    CODE:
+        private_flag = SvTRUE( private_flag_SV );
+        key_string = SvPV( key_string_SV, key_string_length );
+        if( (stringBIO = BIO_new_mem_buf(key_string, key_string_length)) == NULL )
+            croak( "Failed to create memory BIO %s", ERR_error_string(ERR_get_error(), NULL));
+        RETVAL = private_flag
+            ? PEM_read_bio_DSAPrivateKey( stringBIO, NULL, NULL, NULL )
+            : PEM_read_bio_DSA_PUBKEY( stringBIO, NULL, NULL, NULL );
+        BIO_set_close(stringBIO, BIO_CLOSE);
+        BIO_free( stringBIO );
+        if ( RETVAL == NULL )
+            croak( "Failed to read key %s", ERR_error_string(ERR_get_error(), NULL));
     OUTPUT:
         RETVAL
 

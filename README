@@ -1,4 +1,4 @@
-Crypt::OpenSSL::DSA version 0.02
+Crypt::OpenSSL::DSA version 0.04
 ================================
 
 DESCRIPTION
@@ -26,5 +26,5 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2001 T.J. Mather.  Crypt::OpenSSL::DSA is free software;
+Copyright (c) 2002 T.J. Mather.  Crypt::OpenSSL::DSA is free software;
 you may redistribute it and/or modify it under the same terms as Perl itself. 
