@@ -7,7 +7,7 @@ require DynaLoader;
 
 use vars qw(@ISA $VERSION);
 @ISA = qw(DynaLoader);
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 bootstrap Crypt::OpenSSL::DSA $VERSION;
 
@@ -86,11 +86,19 @@ Signs $message, returning the signature.  Note that $meesage cannot exceed
 
 $dsa is the signer's private key.
 
+=item $sig_obj = $dsa->do_sign( $message );
+
+Similar to C<sign>, but returns a L<Crypt::OpenSSL::DSA::Signature> object.
+
 =item $valid = $dsa->verify( $message, $sig );
 
 Verifies that the $sig signature for $message is valid.
 
 $dsa is the signer's public key.
+
+=item $valid = $dsa->do_verify( $message, $sig_obj );
+
+Similar to C<verify>, but uses a L<Crypt::OpenSSL::DSA::Signature> object.
 
 =item $dsa->write_params( $filename );
 
@@ -139,10 +147,12 @@ T.J. Mather, E<lt>tjmather@tjmather.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 T.J. Mather.  Crypt::OpenSSL::DSA is free software;
+Copyright (c) 2001, 2002 T.J. Mather.  Crypt::OpenSSL::DSA is free software;
 you may redistribute it and/or modify it under the same terms as Perl itself. 
 
 =head1 SEE ALSO
+
+L<Crypt::OpenSSL::DSA::Signature>
 
 L<Crypt::DSA>, L<Crypt::OpenSSL::RSA>
 

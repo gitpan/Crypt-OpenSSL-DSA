@@ -1,5 +1,5 @@
 Changes
-DSA.pm
+lib/Crypt/OpenSSL/DSA.pm
 DSA.xs
 Makefile.PL
 MANIFEST

@@ -70,7 +70,7 @@ do_sign(dsa, value)
         char *value
     PREINIT:
         DSA_SIG * sig;
-        char * CLASS = "Crypt::OpenSSL::DSA::Sig";
+        char * CLASS = "Crypt::OpenSSL::DSA::Signature";
     CODE:
         if (!(sig = DSA_do_sign((const unsigned char *)value, strlen(value), dsa))) {
           croak("Error in dsa_sign: %s",ERR_error_string(ERR_get_error(), NULL));
@@ -104,6 +104,16 @@ verify(dsa, dgst, sigbuf)
         char *sigbuf
     CODE:
         RETVAL = DSA_verify(0, dgst, strlen(dgst), sigbuf, strlen(sigbuf), dsa);
+    OUTPUT:
+        RETVAL
+
+int
+do_verify(dsa, dgst, sig)
+        DSA *dsa
+        char *dgst
+        DSA_SIG *sig
+    CODE:
+        RETVAL = DSA_do_verify(dgst, strlen(dgst), sig, dsa);
     OUTPUT:
         RETVAL
 
@@ -247,7 +257,7 @@ get_pub_key(dsa)
     OUTPUT:
         RETVAL
 
-MODULE = Crypt::OpenSSL::DSA    PACKAGE = Crypt::OpenSSL::DSA::Sig
+MODULE = Crypt::OpenSSL::DSA    PACKAGE = Crypt::OpenSSL::DSA::Signature
 
 void
 DESTORY(dsa_sig)
@@ -255,18 +265,30 @@ DESTORY(dsa_sig)
     CODE:
         DSA_SIG_free(dsa_sig);
 
-char *
+SV *
 get_r(dsa_sig)
         DSA_SIG *dsa_sig
+    PREINIT:
+        char *to;
+        int len;
     CODE:
-        RETVAL = (char *)BN_bn2hex(dsa_sig->r);
+        to = malloc(sizeof(char) * 128);
+        len = BN_bn2bin(dsa_sig->r, to);
+        RETVAL = newSVpvn(to, len);
+        free(to);
     OUTPUT:
         RETVAL
 
-char *
+SV *
 get_s(dsa_sig)
         DSA_SIG *dsa_sig
+    PREINIT:
+        char *to;
+        int len;
     CODE:
-        RETVAL = (char *)BN_bn2hex(dsa_sig->s);
+        to = malloc(sizeof(char) * 128);
+        len = BN_bn2bin(dsa_sig->s, to);
+        RETVAL = newSVpvn(to, len);
+        free(to);
     OUTPUT:
         RETVAL

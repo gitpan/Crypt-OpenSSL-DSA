@@ -5,13 +5,14 @@ use strict;
 use Test;
 use Crypt::OpenSSL::DSA;
 
-BEGIN { plan tests => 14 }
+BEGIN { plan tests => 17 }
 
 my $message = "foo bar";
 
 my $dsa = Crypt::OpenSSL::DSA->generate_parameters( 512, "foo" );
 $dsa->generate_key;
 my $dsa_sig1 = $dsa->sign($message);
+my $dsa_sig_obj1 = $dsa->do_sign($message);
 my $bogus_sig = $dsa_sig1;
 $bogus_sig =~ s!.a$!ba!;
 $bogus_sig =~ s!.$!a!;
@@ -21,8 +22,13 @@ ok(length($dsa->get_p),64);
 ok(length($dsa->get_q),20);
 ok(length($dsa->get_g),64);
 
+ok(length($dsa_sig_obj1->get_r), 20);
+ok(length($dsa_sig_obj1->get_s), 20);
+
 ok($dsa->verify($message, $dsa_sig1), 1);
 ok($dsa->verify($message, $bogus_sig), 0);
+
+ok($dsa->do_verify($message, $dsa_sig_obj1), 1);
 
 ok($dsa->write_params("dsa.param.pem"), 1);
 ok($dsa->write_pub_key("dsa.pub.pem"), 1);

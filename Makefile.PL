@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'		=> 'Crypt::OpenSSL::DSA',
-    'VERSION_FROM'	=> 'DSA.pm', # finds $VERSION
+    'VERSION_FROM'	=> 'lib/Crypt/OpenSSL/DSA.pm', # finds $VERSION
     'PREREQ_PM'		=> {}, # e.g., Module::Name => 1.1
     'AUTHOR'            => 'T.J. Mather',
     'LIBS'              => ['-lcrypto'],
