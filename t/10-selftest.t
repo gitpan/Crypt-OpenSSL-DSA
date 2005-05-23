@@ -104,3 +104,4 @@ ok($dsa6->verify($message, $dsa_sig3), 1);
 unlink("dsa.param.pem");
 unlink("dsa.priv.pem");
 unlink("dsa.pub.pem");
+

@@ -7,7 +7,7 @@ require DynaLoader;
 
 use vars qw(@ISA $VERSION);
 @ISA = qw(DynaLoader);
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 bootstrap Crypt::OpenSSL::DSA $VERSION;
 

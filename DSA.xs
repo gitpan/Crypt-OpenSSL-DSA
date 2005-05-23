@@ -40,17 +40,19 @@ DESTROY(dsa)
         DSA_free(dsa);
 
 DSA *
-generate_parameters(CLASS, bits, seed = "")
+generate_parameters(CLASS, bits, seed = NULL)
         char * CLASS
         int bits
-        char *seed
+        SV * seed
     PREINIT:
         DSA * dsa;
         int seed_len = 0;
+        char * seedpv = NULL;
     CODE:
-        if(seed)
-          seed_len = strlen(seed);
-        dsa = DSA_generate_parameters(bits, seed, seed_len, NULL, NULL, NULL, NULL);
+        if (seed) {
+          seedpv = SvPV(seed, seed_len);
+        }
+        dsa = DSA_generate_parameters(bits, seedpv, seed_len, NULL, NULL, NULL, NULL);
         if (!dsa)
           croak(ERR_reason_error_string(ERR_get_error()));
         RETVAL = dsa;
@@ -66,14 +68,17 @@ generate_key(dsa)
         RETVAL
 
 DSA_SIG *
-do_sign(dsa, value)
+do_sign(dsa, dgst)
         DSA * dsa
-        char *value
+        SV * dgst
     PREINIT:
         DSA_SIG * sig;
         char * CLASS = "Crypt::OpenSSL::DSA::Signature";
+        char * dgst_pv = NULL;
+        int dgst_len = 0;
     CODE:
-        if (!(sig = DSA_do_sign((const unsigned char *)value, strlen(value), dsa))) {
+        dgst_pv = SvPV(dgst, dgst_len);
+        if (!(sig = DSA_do_sign((const unsigned char *) dgst_pv, dgst_len, dsa))) {
           croak("Error in dsa_sign: %s",ERR_error_string(ERR_get_error(), NULL));
         }
         RETVAL = sig;
@@ -83,14 +88,20 @@ do_sign(dsa, value)
 SV *
 sign(dsa, dgst)
         DSA * dsa
-        char *dgst
+        SV * dgst
     PREINIT:
         unsigned char *sigret;
         unsigned int siglen;
+        char * dgst_pv = NULL;
+        int dgst_len = 0;
     CODE:
         siglen = DSA_size(dsa);
         sigret = malloc(siglen);
-        if (!(DSA_sign(0, (const unsigned char *)dgst, strlen(dgst), sigret, &siglen, dsa))) {
+
+        dgst_pv = SvPV(dgst, dgst_len);
+        /* warn("Length of sign [%s] is %d\n", dgst_pv, dgst_len); */
+
+        if (!(DSA_sign(0, (const unsigned char *) dgst_pv, dgst_len, sigret, &siglen, dsa))) {
           croak("Error in DSA_sign: %s",ERR_error_string(ERR_get_error(), NULL));
         }
         RETVAL = newSVpvn(sigret, siglen);
@@ -101,22 +112,33 @@ sign(dsa, dgst)
 int
 verify(dsa, dgst, sigbuf)
         DSA * dsa
-        char *dgst
+        SV *dgst
         SV *sigbuf
+    PREINIT:
+        char * dgst_pv = NULL;
+        int dgst_len = 0;
+        char * sig_pv = NULL;
+        int sig_len = 0;
     CODE:
-        RETVAL = DSA_verify(0, dgst, strlen(dgst), SvPV(sigbuf, SvLEN(sigbuf)), SvLEN(sigbuf), dsa);
+        dgst_pv = SvPV(dgst, dgst_len);
+        sig_pv = SvPV(sigbuf, sig_len);
+        RETVAL = DSA_verify(0, dgst_pv, dgst_len, sig_pv, sig_len, dsa);
         if (RETVAL == -1)
-          croak("Error in DSA_verify: %s",ERR_error_string(ERR_get_error(), NULL));        
+          croak("Error in DSA_verify: %s",ERR_error_string(ERR_get_error(), NULL));
     OUTPUT:
         RETVAL
 
 int
 do_verify(dsa, dgst, sig)
         DSA *dsa
-        char *dgst
+        SV *dgst
         DSA_SIG *sig
+    PREINIT:
+        char * dgst_pv = NULL;
+        int dgst_len = 0;
     CODE:
-        RETVAL = DSA_do_verify(dgst, strlen(dgst), sig, dsa);
+        dgst_pv = SvPV(dgst, dgst_len);
+        RETVAL = DSA_do_verify(dgst_pv, dgst_len, sig, dsa);
     OUTPUT:
         RETVAL
 
