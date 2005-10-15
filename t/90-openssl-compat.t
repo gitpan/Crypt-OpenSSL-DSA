@@ -12,9 +12,17 @@ use Crypt::OpenSSL::DSA;
 BEGIN { plan tests => 84 }
 
 my $HAS_SHA1 = eval "use Digest::SHA1; 1;";
-my $OPEN_SSL = `which openssl` || "/usr/bin/openssl";
-chomp $OPEN_SSL;
-my $testable = -x $OPEN_SSL && $HAS_SHA1;
+my ($OPEN_SSL, $testable);
+if($^O !~ /mswin32/i) {
+  $OPEN_SSL = `which openssl` || "/usr/bin/openssl";
+  chomp $OPEN_SSL;
+  $testable = -x $OPEN_SSL && $HAS_SHA1;
+  }
+else {
+  $OPEN_SSL = "openssl";
+  eval{`openssl version`};
+  if(!$@) {$testable = 1 && $HAS_SHA1}
+  }
 my $why_skip = $HAS_SHA1 ? "Need openssl binary in path" : "Need Digest::SHA1 to test";
 
 my $dsa = Crypt::OpenSSL::DSA->generate_parameters( 512, "foo" );

@@ -1,5 +1,8 @@
 Revision history for Perl extension Crypt::OpenSSL::DSA.
 
+0.13  October 15, 2005
+	- made t/90-openssl-compat.t windows compatible (Rob)
+
 0.12  May 22, 2005
 	- Removed all use of strlen() in DSA.xs so signatures with nulls,
           as commonly generated with sha1, could be signed/verified,
